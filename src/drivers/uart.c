@@ -1,7 +1,9 @@
 #include <drivers/uart.h>
 
-volatile unsigned int * const UART0DR = (unsigned int *) 0x09000000;
-volatile unsigned int * const UART0FR = (unsigned int *) 0x09000018;
+#define UART0_BASE 0x09000000
+
+volatile unsigned int * const UART0DR = (unsigned int *) (UART0_BASE + 0x00);
+volatile unsigned int * const UART0FR = (unsigned int *) (UART0_BASE + 0x18);
 
 
 void uart_putc(const char c)
@@ -26,4 +28,11 @@ void uart_puthex(uint64_t n)
 void uart_puts(const char *s) {
 	for (int i = 0; s[i] != '\0'; i ++)
 		uart_putc((unsigned char)s[i]);
+}
+
+char uart_getc(void)
+{
+    while ((*UART0FR) & (1 << 4)) { }
+    
+    return (char)(*UART0DR & 0xFF);
 }

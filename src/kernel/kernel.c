@@ -1,4 +1,7 @@
 #include <drivers/uart.h>
+#include <string.h>
+#include <stdlib.h>
+#include <kshell.h>
 
 const char *header = "================================ ARM-PRos v0.1 ================================\n\r";
 
@@ -20,7 +23,5 @@ void main() {
     uart_puts(copyright);
     uart_puts(shell);
 
-    while (1) {
-        __asm__("wfe");
-    }
+    kshell_start();
 }

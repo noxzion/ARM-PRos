@@ -65,6 +65,17 @@ print_info "Compiling Drivers..."
 ${CROSS_COMPILE}gcc $CFLAGS -c "$SRC_DIR/drivers/uart.c" -o "$BIN_DIR/uart.o"
 check_error "Failed to compile uart.c"
 
+print_info "Compiling libc..."
+${CROSS_COMPILE}gcc $CFLAGS -c "$SRC_DIR/lib/string.c" -o "$BIN_DIR/string.o"
+check_error "Failed to compile string.c"
+
+${CROSS_COMPILE}gcc $CFLAGS -c "$SRC_DIR/lib/stdlib.c" -o "$BIN_DIR/stdlib.o"
+check_error "Failed to compile stdlib.c"
+
+print_info "Compiling Shell..."
+${CROSS_COMPILE}gcc $CFLAGS -c "$SRC_DIR/kernel/kshell.c" -o "$BIN_DIR/kshell.o"
+check_error "Failed to compile kshell.c"
+
 print_info "Compiling Kernel..."
 ${CROSS_COMPILE}gcc $CFLAGS -c "$SRC_DIR/kernel/kernel.c" -o "$BIN_DIR/kernel_c.o"
 check_error "Failed to compile kernel.c"
@@ -74,7 +85,7 @@ ${CROSS_COMPILE}gcc -c "$SRC_DIR/arch/boot.S" -o "$BIN_DIR/boot.o"
 check_error "Failed to assemble boot.S"
 
 print_info "Linking..."
-${CROSS_COMPILE}ld -T "$SRC_DIR/kernel/linker.ld" "$BIN_DIR/boot.o" "$BIN_DIR/kernel_c.o" "$BIN_DIR/uart.o" -o "$OUTPUT"
+${CROSS_COMPILE}ld -T "$SRC_DIR/kernel/linker.ld" "$BIN_DIR/boot.o" "$BIN_DIR/kernel_c.o" "$BIN_DIR/uart.o" "$BIN_DIR/string.o" "$BIN_DIR/stdlib.o" "$BIN_DIR/kshell.o" -o "$OUTPUT"
 check_error "Failed to link"
 
 if [ -f "$OUTPUT" ]; then
