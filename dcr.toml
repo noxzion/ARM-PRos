@@ -1,0 +1,27 @@
+[package]
+name = "KERNEL.ELF"
+version = "0.1.0"
+
+[build]
+language = ["c", "asm"]
+standard = "c11"
+compiler = "clang"
+kind = "bin"
+include = ["src/include"]
+cflags = [
+  "--target=aarch64-none-elf",
+  "-ffreestanding",
+  "-nostdlib"
+]
+ldflags = [
+  "-T",
+  "src/kernel/linker.ld"
+]
+
+[toolchain]
+ld = "ld.lld"
+
+[run]
+cmd = "qemu-system-aarch64 -M virt -cpu cortex-a53 -m 1024 -kernel target/{profile}/KERNEL.ELF -display gtk -serial vc -monitor stdio"
+
+[dependencies]

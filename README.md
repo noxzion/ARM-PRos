@@ -39,6 +39,12 @@ chmod +x build-linux.sh
 ./build-linux.sh
 ```
 
+Or use [dcr](https://dcr.dexoron.su)
+
+```bash
+dcr build
+```
+
 ## Runing ARM-PRos
 
 Install `qemu-system-aarch64` emulator then run this command:
@@ -58,6 +64,12 @@ qemu-system-aarch64 \
     -display gtk \
     -serial vc \
     -monitor stdio
+```
+
+Or use [dcr](https://dcr.dexoron.su)
+
+```bash
+dcr run
 ```
 
 <div align="center">
