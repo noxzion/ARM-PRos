@@ -74,6 +74,13 @@ check_error "Failed to compile framebuffer.c"
 ${CROSS_COMPILE}gcc $CFLAGS -c "$SRC_DIR/drivers/console.c" -o "$BIN_DIR/console.o"
 check_error "Failed to compile console.c"
 
+${CROSS_COMPILE}gcc $CFLAGS -c "$SRC_DIR/drivers/intc.c" -o "$BIN_DIR/intc.o"
+check_error "Failed to compile intc.c"
+
+print_info "Compiling Rust USB driver..."
+(cd "$SRC_DIR/rust-usb" && cargo build --release --target aarch64-unknown-none)
+check_error "Failed to compile rust-usb"
+
 print_info "Compiling libc..."
 ${CROSS_COMPILE}gcc $CFLAGS -c "$SRC_DIR/lib/font8x8_basic.c" -o "$BIN_DIR/font8x8_basic.o"
 check_error "Failed to compile font8x8_basic.c"
@@ -99,9 +106,13 @@ print_info "Assembling Bootstrap..."
 ${CROSS_COMPILE}gcc -c "$SRC_DIR/arch/boot.S" -o "$BIN_DIR/boot.o"
 check_error "Failed to assemble boot.S"
 
+${CROSS_COMPILE}gcc -c "$SRC_DIR/arch/vectors.S" -o "$BIN_DIR/vectors.o"
+check_error "Failed to assemble vectors.S"
+
 print_info "Linking..."
 ${CROSS_COMPILE}ld -T "$SRC_DIR/kernel/linker.ld" \
     "$BIN_DIR/boot.o" \
+    "$BIN_DIR/vectors.o" \
     "$BIN_DIR/kernel_c.o" \
     "$BIN_DIR/log.o" \
     "$BIN_DIR/kshell.o" \
@@ -109,6 +120,8 @@ ${CROSS_COMPILE}ld -T "$SRC_DIR/kernel/linker.ld" \
     "$BIN_DIR/framebuffer.o" \
     "$BIN_DIR/mailbox.o" \
     "$BIN_DIR/uart.o" \
+    "$BIN_DIR/intc.o" \
+    "$SRC_DIR/rust-usb/target/aarch64-unknown-none/release/librust_usb.a" \
     "$BIN_DIR/font8x8_basic.o" \
     "$BIN_DIR/string.o" \
     "$BIN_DIR/stdlib.o" \

@@ -20,6 +20,11 @@ _start:
     str xzr, [x0], #8
     b   2b
 3:
+    /* Set vector base address */
+    ldr x0, =vectors
+    msr vbar_el1, x0
+    msr vbar_el2, x0
+
     bl  main
 
 4:

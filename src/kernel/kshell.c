@@ -1,10 +1,22 @@
 #include <kshell.h>
 #include <drivers/console.h>
 #include <drivers/uart.h>
+#include <drivers/usb.h>
 #include <log.h>
 #include <string.h>
 
 #define CMD_MAX_LEN 256
+
+static char kshell_getc(void) {
+    if (uart_has_data())
+        return uart_getc();
+    if (usb_keyboard_connected()) {
+        char c = (char)usb_keyboard_getc();
+        if (c != 0)
+            return c;
+    }
+    return 0;
+}
 
 void kshell_start(void) {
     char cmd_buffer[CMD_MAX_LEN];
@@ -13,7 +25,8 @@ void kshell_start(void) {
     console_puts("\n\r[PRos] > ");
 
     while (1) {
-        char c = uart_getc();
+        char c = kshell_getc();
+        if (c == 0) continue;
 
         if (c == '\r' || c == '\n') {
             console_puts("\n\r");

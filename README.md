@@ -27,9 +27,9 @@
 - [X] String Library (`strcmp`, `strlen`, `atoi`)
 - [X] Kernel Shell
 - [X] Framebuffer
-- [ ] Interrupt Controller (GIC)
-- [ ] Keyboard Driver
-- [ ] Timer Driver
+- [x] USB HID Keyboard Driver
+- [x] Interrupt Controller (GIC)
+- [x] Timer Driver
 - [ ] Physical Memory Manager
 - [ ] PCI Scanning
 - [ ] FAT32 file system
@@ -53,25 +53,25 @@ dcr build
 
 ## Runing ARM-PRos
 
-Install `qemu-system-aarch64` emulator then run this command:
+Install `qemu-system-aarch64` emulator then run:
 
+### Text Mode (Recommended - Full Keyboard Support)
+```bash
+./run-linux-text.sh
+```
+**Best for development** - Full keyboard input support via serial console.
+Exit: `Ctrl+A` then `X`
+
+### GTK Display Mode (Limited Keyboard)
 ```bash
 ./run-linux.sh
 ```
-
-Or manually:
-
+GTK window with display. For keyboard input, open another terminal:
 ```bash
-qemu-system-aarch64 \
-    -M raspi3b \
-    -drive file="$SD_IMG",format=raw,if=sd,index=0 \
-    -kernel "$KERNEL_IMG" \
-    -serial stdio \
-    -display gtk
+telnet localhost 5555
 ```
 
-Or use [dcr](https://dcr.dexoron.su)
-
+Or use [dcr](https://dcr.dexoron.su):
 ```bash
 dcr run
 ```

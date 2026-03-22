@@ -37,4 +37,5 @@ qemu-system-aarch64 \
     -drive file="$SD_IMG",format=raw,if=sd,index=0 \
     -kernel "$KERNEL_IMG" \
     -serial stdio \
+    -device usb-kbd \
     -display gtk

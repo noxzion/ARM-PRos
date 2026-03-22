@@ -3,11 +3,12 @@ name = "KERNEL.ELF"
 version = "0.1.0"
 
 [build]
-language = ["c", "asm"]
+language = ["c", "asm", "rust"]
 standard = "c11"
 compiler = "clang"
 kind = "bin"
 include = ["src/include"]
+
 cflags = [
   "--target=aarch64-none-elf",
   "-ffreestanding",
@@ -15,13 +16,21 @@ cflags = [
 ]
 ldflags = [
   "-T",
-  "src/kernel/linker.ld"
+  "src/kernel/linker.ld",
+  "src/rust-usb/target/aarch64-unknown-none/release/librust_usb.a"
 ]
+
+[[build.steps]]
+name = "rust-usb"
+in = "src/rust-usb/src"
+out = "src/rust-usb/target/aarch64-unknown-none/release/librust_usb.a"
+cmd = "cargo build --manifest-path src/rust-usb/Cargo.toml --release --target aarch64-unknown-none"
+
 
 [toolchain]
 ld = "ld.lld"
 
 [run]
-cmd = "qemu-system-aarch64 -M raspi3b -kernel target/{profile}/KERNEL.ELF -serial stdio -display gtk"
+cmd = "qemu-system-aarch64 -M raspi3b -kernel target/{profile}/KERNEL.ELF -serial stdio -device usb-kbd -display gtk"
 
 [dependencies]

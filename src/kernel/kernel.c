@@ -1,10 +1,21 @@
 #include <drivers/console.h>
 #include <drivers/framebuffer.h>
 #include <drivers/uart.h>
+#include <drivers/usb.h>
+#include <drivers/intc.h>
 #include <kshell.h>
 #include <log.h>
 #include <string.h>
 #include <stdlib.h>
+
+void c_irq_handler(void) {
+    uint32_t irq = intc_get_pending();
+    if (irq != 0xFFFFFFFF) {
+        log_warn("Unhandled IRQ received!");
+        intc_disable_irq(irq);  /* Disable to prevent infinite IRQ loop */
+    }
+}
+
 
 const char *header = "=============================== ARM-PRos v0.1 ==============================\n\r";
 
@@ -21,12 +32,25 @@ const char *shell = "* Shell: ARM-PRos kernel shell\n\r";
 
 void main() {
     console_init();
+    intc_init();
 
     log_okay("UART PL011 serial console ready");
+    log_okay("Interrupt Controller initialized");
+
+    /* Enable IRQs globally (clear I bit in DAIF) */
+    __asm__ volatile ("msr daifclr, #2");
+
     if (fb_is_ready())
         log_okay("Framebuffer 640x480, 32 bpp (VideoCore mailbox)");
     else
         log_warn("Framebuffer not available - HDMI output disabled");
+    
+    usb_init();
+    log_okay("USB controller initialized");
+    
+    usb_enumerate_device();
+    log_okay("USB device enumeration complete");
+    
     log_okay("Kernel shell ready to start");
 
     console_puts("\n\rPress any key to continue...\n\r");

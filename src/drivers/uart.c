@@ -67,6 +67,11 @@ void uart_puts(const char *s) {
 		uart_putc((unsigned char)s[i]);
 }
 
+int uart_has_data(void)
+{
+    return (UART0_FR & (1u << 4)) == 0;
+}
+
 char uart_getc(void)
 {
     while (UART0_FR & (1u << 4)) { }
